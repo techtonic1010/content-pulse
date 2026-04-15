@@ -1,0 +1,30 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: event-ingestion-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/recengine
+    username: recuser
+    password: recpass
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+app:
+  kafka:
+    topic: user-events

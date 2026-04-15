@@ -1,0 +1,156 @@
+Here is a clean routine you can follow every day.
+xrandr --output eDP-1 --brightness 0.5
+
+Start the project
+1) Go to the project folder
+cd ~/Desktop/content_pulse/recommendation_engine
+cd ~/Desktop/content_pulse/recommendation_engine/recommendation-service
+cd ~/Desktop/content_pulse/recommendation_engine/event-processor-service
+cd ~/Desktop/content_pulse/recommendation_engine/event-ingestion-service
+./mvnw spring-boot:run
+
+Expected output: no output, just returns to prompt in that folder.
+
+2) Check current Docker status
+docker compose ps
+
+Expected output: a table showing services and whether they are running, exited, or created.
+
+Optional quick check:
+
+docker ps
+
+Expected output: only running containers.
+
+3) Stop local PostgreSQL and Redis if they conflict with Docker ports
+
+Use this only if Docker is supposed to run Postgres/Redis on 5432 and 6379.
+
+sudo systemctl stop postgresql
+sudo systemctl stop redis
+
+Expected output: usually no output, just returns to prompt.
+
+Verify ports are free:
+
+sudo lsof -i :5432
+sudo lsof -i :6379
+
+Expected output: nothing, or no listening process listed.
+
+4) Start infrastructure containers
+docker compose up -d
+
+Expected output: lines like:
+
+Network ... Created
+Container postgres Started
+Container redis Started
+Container kafka Started
+5) Confirm everything is up
+docker ps
+
+Expected output: running containers with names like postgres, redis, kafka.
+
+Also useful:
+
+docker compose ps
+
+Expected output: service table with status running.
+
+6) Check logs if something looks off
+docker compose logs -f
+
+Expected output: live logs from all services.
+
+For one service:
+
+docker compose logs -f postgres
+docker compose logs -f redis
+docker compose logs -f kafka
+
+Expected output: logs for that container only.
+
+7) Start your application services
+
+Run your backend services separately, usually from their own folders or IDE run configs.
+
+Expected output: Spring Boot startup logs ending with something like:
+
+Started ... in X seconds
+Tomcat started on port ...
+8) Verify app ports
+sudo lsof -i -P -n | grep LISTEN
+
+Expected output: a list of listening ports and processes.
+
+Stop the project for the day
+1) Stop app services first
+
+Stop Spring Boot apps from IDE or terminal.
+
+Expected output: app shutdown logs.
+
+2) Stop Docker containers cleanly
+docker compose down
+
+Expected output: lines like:
+
+Container postgres Removed
+Container redis Removed
+Container kafka Removed
+Network ... Removed
+3) Start local services again if you need them
+sudo systemctl start postgresql
+sudo systemctl start redis
+
+Expected output: usually no output.
+
+Useful optional status commands
+Docker version
+docker --version
+docker compose version
+
+Expected output: installed versions.
+
+See container resource usage
+docker stats
+
+Expected output: live CPU, memory, network, and I/O usage.
+
+See all containers, even stopped ones
+docker ps -a
+
+Expected output: running and stopped containers.
+
+See which ports are in use
+sudo lsof -i -P -n | grep LISTEN
+
+Expected output: process-to-port mapping.
+
+Check whether local services are running
+systemctl status postgresql
+systemctl status redis
+
+Expected output: active (running) or inactive (dead).
+
+Inspect compose file behavior
+docker compose config
+
+Expected output: resolved compose config after parsing.
+
+Best daily routine
+
+Start:
+
+cd ~/Desktop/content_pulse/recommendation_engine
+sudo systemctl stop postgresql redis
+docker compose up -d
+docker ps
+
+End:
+
+docker compose down
+sudo systemctl start postgresql redis
+
+One small note: the warning about version in docker-compose.yml is harmless, but you can remove that version: line later to keep the file cleaner

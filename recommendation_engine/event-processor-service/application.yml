@@ -1,0 +1,36 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: event-processor-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/recengine
+    username: recuser
+    password: recpass
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: event-processor-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+app:
+  kafka:
+    topic: user-events
