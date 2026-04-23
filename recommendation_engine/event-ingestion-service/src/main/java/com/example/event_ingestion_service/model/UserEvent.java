@@ -1,6 +1,9 @@
 package com.example.event_ingestion_service.model;
 
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,26 +13,33 @@ import lombok.AllArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserEvent {
-    
-    private String eventId;
-
-        @NotBlank(message = "userId is required")
+    @NotBlank(message = "userId is required")
     private String userId;
 
-        @NotBlank(message = "contentId is required")
+    @NotBlank(message = "contentId is required")
     private String contentId;
 
-        @Pattern(
-            regexp = "PLAY|LIKE|SKIP|DISLIKE",
-            message = "eventType must be one of PLAY, LIKE, SKIP, DISLIKE"
-        )
-        private String eventType;
+    @NotBlank(message = "eventType is required")
+    @Pattern(
+            regexp = "COMPLETE|PLAY|SKIP|LIKE|DISLIKE",
+            message = "eventType must be one of COMPLETE, PLAY, SKIP, LIKE, DISLIKE"
+    )
+    private String eventType;
 
+    @NotNull(message = "completionRatio is required")
+    @DecimalMin(value = "0.0", message = "completionRatio must be >= 0.0")
+    @DecimalMax(value = "1.0", message = "completionRatio must be <= 1.0")
     private Double completionRatio;
 
+    @NotBlank(message = "sessionId is required")
     private String sessionId;
 
-    private String sourceScreen; // HOME, SEARCH
+    @NotBlank(message = "source is required")
+    private String source;
 
-    private String timestamp;
+    @NotBlank(message = "contentType is required")
+    private String contentType;
+
+    @NotNull(message = "timestamp is required")
+    private Long timestamp;
 }

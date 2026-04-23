@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.Objects;
-import java.util.UUID;
 
 @Service
 public class EventProducerService {
@@ -25,11 +24,8 @@ public class EventProducerService {
     }
 
     public void send(UserEvent event) {
-        if (event.getEventId() == null || event.getEventId().isBlank()) {
-            event.setEventId(UUID.randomUUID().toString());
-        }
-        if (event.getTimestamp() == null || event.getTimestamp().isBlank()) {
-            event.setTimestamp(Instant.now().toString());
+        if (event.getTimestamp() == null) {
+            event.setTimestamp(Instant.now().getEpochSecond());
         }
 
         kafkaTemplate.send(

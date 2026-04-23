@@ -1,0 +1,46 @@
+{
+  "description": "Temporary sample mapping generated from item_ids.npy",
+  "count": 10,
+  "mappings": [
+    {
+      "faissIndex": 0,
+      "movieId": "1"
+    },
+    {
+      "faissIndex": 1,
+      "movieId": "2"
+    },
+    {
+      "faissIndex": 2,
+      "movieId": "3"
+    },
+    {
+      "faissIndex": 3,
+      "movieId": "4"
+    },
+    {
+      "faissIndex": 4,
+      "movieId": "5"
+    },
+    {
+      "faissIndex": 5,
+      "movieId": "6"
+    },
+    {
+      "faissIndex": 6,
+      "movieId": "7"
+    },
+    {
+      "faissIndex": 7,
+      "movieId": "8"
+    },
+    {
+      "faissIndex": 8,
+      "movieId": "9"
+    },
+    {
+      "faissIndex": 9,
+      "movieId": "10"
+    }
+  ]
+}
