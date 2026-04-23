@@ -5,30 +5,31 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UserEventConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(UserEventConsumer.class);
-    private final ContentEnrichmentService contentEnrichmentService;
+    private static final String USER_EVENTS_KEY_PREFIX = "user_events:";
+    private static final long EVENT_WINDOW_SIZE = 50;
+
     private final ObjectMapper objectMapper;
-    private final UserProfileService userProfileService;
+    private final RedisTemplate<String, String> redisTemplate;
     private final String topic;
 
     public UserEventConsumer(
             ObjectMapper objectMapper,
-            UserProfileService userProfileService,
-            ContentEnrichmentService contentEnrichmentService,
+            RedisTemplate<String, String> redisTemplate,
             @Value("${app.kafka.topic:user-events}") String topic
     ) 
     {
         this.objectMapper = objectMapper;
-        this.userProfileService = userProfileService;
-        this.contentEnrichmentService = contentEnrichmentService;
+        this.redisTemplate = redisTemplate;
         this.topic = topic;
     }
 
@@ -46,25 +47,22 @@ public class UserEventConsumer {
                 return;
             }
 
-            ContentEnrichmentService.GenreLookupResult lookupResult =
-                    contentEnrichmentService.getGenresForContent(event.getContentId());
-            List<String> genres = lookupResult.genres();
+            String redisKey = USER_EVENTS_KEY_PREFIX + event.getUserId();
+            String normalizedEvent = objectMapper.writeValueAsString(event);
+
+                redisTemplate.opsForList().leftPush(
+                    Objects.requireNonNull(redisKey),
+                    Objects.requireNonNull(normalizedEvent)
+                );
+                redisTemplate.opsForList().trim(Objects.requireNonNull(redisKey), 0, EVENT_WINDOW_SIZE - 1);
 
             log.info(
-                    "Event enriched | userId={} | contentId={} | source={} | genres={}",
+                    "Processed event for userId={} contentId={} topic={} redisKey={} windowSize={}",
                     event.getUserId(),
                     event.getContentId(),
-                    lookupResult.source(),
-                    genres
-            );
-
-                userProfileService.processEvent(event, genres);
-
-            log.info(
-                    "Processed eventId={} for userId={} on topic={}",
-                    event.getEventId(),
-                    event.getUserId(),
-                    topic
+                    topic,
+                    redisKey,
+                    EVENT_WINDOW_SIZE
             );
         } catch (Exception ex) {
             log.error("Failed to process Kafka message. payload={}", payload, ex);

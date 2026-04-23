@@ -88,8 +88,8 @@ public class UserProfileService {
     }
 
     private String resolveFallbackGenre(UserEvent event) {
-        if (event.getSourceScreen() != null && !event.getSourceScreen().isBlank()) {
-            return event.getSourceScreen().trim().toLowerCase();
+        if (event.getSource() != null && !event.getSource().isBlank()) {
+            return event.getSource().trim().toLowerCase();
         }
         return "general";
     }
