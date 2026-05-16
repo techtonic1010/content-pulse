@@ -19,7 +19,7 @@ ITEM_EMBEDDINGS_PATH = _resolve_artifact("item_embeddings.npy")
 USER_IDS_PATH = _resolve_artifact("user_ids.npy")
 ITEM_IDS_PATH = _resolve_artifact("item_ids.npy")
 
-MAPPER_ITEM_EMBEDDINGS_PATH = EMBEDDINGS_DIR / "item_embeddings (2).npy"
+MAPPER_ITEM_EMBEDDINGS_PATH = EMBEDDINGS_DIR / "item_embeddings.npy"
 MAPPER_MOVIE2IDX_PATH = EMBEDDINGS_DIR / "movie2idx.pkl"
 FAISS_INDEX_PATH = EMBEDDINGS_DIR / "item_index.faiss"
 MOVIES_METADATA_CSV_PATH = Path(os.getenv("MOVIES_METADATA_CSV_PATH", str(BASE_DIR.parent.parent / "movie_lens_samll_dataset" / "movies.csv")))
